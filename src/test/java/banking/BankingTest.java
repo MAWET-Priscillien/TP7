@@ -63,6 +63,46 @@ public class BankingTest {
 		assertEquals("Balance incorrecte !", before0 - amount, myDAO.balanceForCustomer(fromCustomer), 0.001f);
 		assertEquals("Balance incorrecte !", before1 + amount, myDAO.balanceForCustomer(toCustomer), 0.001f);				
 	}
+        
+        @Test ( expected = Exception.class )
+        public void negativeAfter() throws Exception {
+            float amount = 101.0f;
+            int fromCustomer = 0; // Le client 0 dispose de 100€ dans le jeu de tests
+            int toCustomer = 1;
+            // On mémorise les balances dans les deux comptes avant la transaction
+            float before0 = myDAO.balanceForCustomer(fromCustomer);
+            float before1 = myDAO.balanceForCustomer(toCustomer);
+            myDAO.bankTransferTransaction(fromCustomer, toCustomer, amount);
+            assertEquals("Balance incorrecte !", before0 - amount, myDAO.balanceForCustomer(fromCustomer), 0.001f);
+            assertEquals("Balance incorrecte !", before1 + amount, myDAO.balanceForCustomer(toCustomer), 0.001f);
+        }
+        
+        
+        @Test ( expected = Exception.class )
+        public void fromNotExist() throws Exception {
+            float amount = 10.0f;
+            int fromCustomer = 2; // Le client 2 n'existe pas
+            int toCustomer = 1;
+            // On mémorise les balances dans les deux comptes avant la transaction
+            float before0 = myDAO.balanceForCustomer(fromCustomer);
+            float before1 = myDAO.balanceForCustomer(toCustomer);
+            myDAO.bankTransferTransaction(fromCustomer, toCustomer, amount);
+            assertEquals("Balance incorrecte !", before0 - amount, myDAO.balanceForCustomer(fromCustomer), 0.001f);
+            assertEquals("Balance incorrecte !", before1 + amount, myDAO.balanceForCustomer(toCustomer), 0.001f);
+        }
+        
+        @Test ( expected = Exception.class )
+        public void toNotExist() throws Exception {
+            float amount = 10.0f;
+            int fromCustomer = 0;
+            int toCustomer = 2; // Le client 2 n'existe pas
+            // On mémorise les balances dans les deux comptes avant la transaction
+            float before0 = myDAO.balanceForCustomer(fromCustomer);
+            float before1 = myDAO.balanceForCustomer(toCustomer);
+            myDAO.bankTransferTransaction(fromCustomer, toCustomer, amount);
+            assertEquals("Balance incorrecte !", before0 - amount, myDAO.balanceForCustomer(fromCustomer), 0.001f);
+            assertEquals("Balance incorrecte !", before1 + amount, myDAO.balanceForCustomer(toCustomer), 0.001f);
+        }
 	
 
 	public static DataSource getDataSource() throws SQLException {
